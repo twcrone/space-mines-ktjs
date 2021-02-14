@@ -1,3 +1,4 @@
+import controls.FlyControls
 import ext.aspectRatio
 import ext.minus
 import stats.js.Stats
@@ -18,7 +19,7 @@ class Cube {
         lookAt(pod.mesh.position)
     }
 
-    //private val flyControls = FlyControls(camera, document)
+    private val flyControls = FlyControls(camera)
 
     private val renderer = WebGLRenderer().apply {
         document.body?.appendChild(domElement)

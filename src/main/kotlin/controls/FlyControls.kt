@@ -3,12 +3,14 @@ package controls
 import three.js.Camera
 import three.js.Quaternion
 import kotlinx.browser.document
+import three.js.Event
+import three.js.Vector3
 
-class FlyControls(camera: Camera) {
+class FlyControls(val camera: Camera) {
 
-    init {
-        document.addEventListener("contextmenu", { event: org.w3c.dom.events.Event -> event.preventDefault() }, false)
-    }
+    val domElement = document
+    val scope = this
+
 
     var movementSpeed = 1.0
     var rollSpeed = 0.005
@@ -16,9 +18,14 @@ class FlyControls(camera: Camera) {
     var autoForwad = false
     var tmpQuaternion = Quaternion()
     var mouseStatus = 0
+    var moveState = MoveState()
+    var moveVector = Vector3( 0, 0, 0 );
+    var rotationVector = Vector3( 0, 0, 0 );
 
+    companion object {
+        private const val EPS = 0.000001
 
-//    companion object {
+    }
 //        private fun keyDown(event: KeyboardEvent ) {
 //            if(event.altKey) {
 //                return;
