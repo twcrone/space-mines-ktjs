@@ -15,12 +15,30 @@ class FlyControls(val camera: Camera) {
     var movementSpeed = 1.0
     var rollSpeed = 0.005
     var dragToLook = false
-    var autoForwad = false
+    var autoForward = false
     var tmpQuaternion = Quaternion()
     var mouseStatus = 0
     var moveState = MoveState()
     var moveVector = Vector3( 0, 0, 0 );
     var rotationVector = Vector3( 0, 0, 0 );
+
+    private fun updateMovementVector() {
+        val forward = if (moveState.forward == 1 || (autoForward && moveState.back == 0)) 1 else 0
+
+        moveVector = Vector3(
+            x = (- this.moveState.left + this.moveState.right),
+            y = ( - this.moveState.down + this.moveState.up ),
+            z = ( - forward + this.moveState.back )
+        )
+    }
+
+    private fun updateRotationVector() {
+        rotationVector = Vector3(
+            x = ( - this.moveState.pitchDown + this.moveState.pitchUp ),
+            y = ( - this.moveState.yawRight + this.moveState.yawLeft ),
+            z =  ( - this.moveState.rollRight + this.moveState.rollLeft )
+        )
+    }
 
     companion object {
         private const val EPS = 0.000001
