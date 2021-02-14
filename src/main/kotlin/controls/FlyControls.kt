@@ -3,7 +3,10 @@ package controls
 import three.js.Camera
 import three.js.Quaternion
 import kotlinx.browser.document
+import org.w3c.dom.events.KeyboardEvent
+import org.w3c.dom.events.MouseEvent
 import three.js.Event
+import three.js.EventDispatcher
 import three.js.Vector3
 
 class FlyControls(val camera: Camera) {
@@ -19,8 +22,49 @@ class FlyControls(val camera: Camera) {
     var tmpQuaternion = Quaternion()
     var mouseStatus = 0
     var moveState = MoveState()
-    var moveVector = Vector3( 0, 0, 0 );
-    var rotationVector = Vector3( 0, 0, 0 );
+    var moveVector = Vector3( 0, 0, 0 )
+    var movementSpeedMultiplier = 1.0
+    var rotationVector = Vector3( 0, 0, 0 )
+
+    init {
+        document.addEventListener(
+            type ="contextmenu",
+            callback = { event -> event.preventDefault() }
+        )
+        document.addEventListener(
+            type = "keydown",
+            callback = { event ->
+                val keyboardEvent = event as KeyboardEvent
+                if(!keyboardEvent.altKey) {
+                    when(event.code) {
+                         "ShiftLeft", "ShiftRight" -> movementSpeedMultiplier = .1
+                         "KeyW" -> moveState.forward = 1
+                         "KeyS" -> moveState.back = 1
+                         "KeyA" ->  moveState.left = 1 
+                         "KeyD" ->  moveState.right = 1 
+
+                         "KeyR" ->  moveState.up = 1 
+                         "KeyF" ->  moveState.down = 1 
+
+                         "ArrowUp" ->  moveState.pitchUp = 1 
+                         "ArrowDown" ->  moveState.pitchDown = 1 
+
+                         "ArrowLeft" ->  moveState.yawLeft = 1 
+                         "ArrowRight" ->  moveState.yawRight = 1 
+
+                         "KeyQ" ->  moveState.rollLeft = 1 
+                         "KeyE" ->  moveState.rollRight = 1 
+                    }
+                }
+                this.updateMovementVector()
+                this.updateRotationVector()
+            }
+        )
+    }
+
+    private fun contextmenu(event: Event) {
+
+    }
 
     private fun updateMovementVector() {
         val forward = if (moveState.forward == 1 || (autoForward && moveState.back == 0)) 1 else 0
@@ -38,6 +82,14 @@ class FlyControls(val camera: Camera) {
             y = ( - this.moveState.yawRight + this.moveState.yawLeft ),
             z =  ( - this.moveState.rollRight + this.moveState.rollLeft )
         )
+    }
+
+    fun dispose() {
+
+    }
+
+    fun update() {
+
     }
 
     companion object {

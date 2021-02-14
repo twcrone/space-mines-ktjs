@@ -1,16 +1,16 @@
 package controls
 
 data class MoveState(
-    val up: Int = 0,
-    val down: Int = 0,
-    val left: Int = 0,
-    val right: Int = 0,
-    val forward: Int = 0,
-    val back: Int = 0,
-    val pitchUp: Int = 0,
-    val pitchDown: Int = 0,
-    val yawLeft: Int = 0,
-    val yawRight: Int = 0,
-    val rollLeft: Int = 0,
-    val rollRight: Int = 0,
+    var up: Int = 0,
+    var down: Int = 0,
+    var left: Int = 0,
+    var right: Int = 0,
+    var forward: Int = 0,
+    var back: Int = 0,
+    var pitchUp: Int = 0,
+    var pitchDown: Int = 0,
+    var yawLeft: Int = 0,
+    var yawRight: Int = 0,
+    var rollLeft: Int = 0,
+    var rollRight: Int = 0,
 )
