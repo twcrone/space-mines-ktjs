@@ -8,8 +8,14 @@ import pod.Pod
 
 class Cube {
     private val clock = Clock()
-    private val camera = PerspectiveCamera(75, window.aspectRatio, 0.1, 1000).apply {
-        position.z = 5
+//    private val oldCamera = PerspectiveCamera(75, window.aspectRatio, 0.1, 1000).apply {
+//        position.z = 5
+//    }
+
+    private val pod = Pod()
+    private val camera = PerspectiveCamera(45, window.aspectRatio, 0.1, 1000).apply {
+        position.set(50, 50, 125)
+        lookAt(pod.mesh.position)
     }
 
     private val renderer = WebGLRenderer().apply {
@@ -27,8 +33,6 @@ class Cube {
             left="0px"
         }
     }
-
-    private val pod = Pod()
 
     private val scene = Scene().apply {
         //add(cube)
