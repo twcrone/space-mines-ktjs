@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation(npm("three", "^0.120.0", generateExternals = false))
+    implementation(npm("three", "^0.124.0", generateExternals = false))
 }
 
 kotlin {

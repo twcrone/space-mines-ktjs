@@ -18,6 +18,8 @@ class Cube {
         lookAt(pod.mesh.position)
     }
 
+    //private val flyControls = FlyControls(camera, document)
+
     private val renderer = WebGLRenderer().apply {
         document.body?.appendChild(domElement)
         setSize(window.innerWidth, window.innerHeight)
