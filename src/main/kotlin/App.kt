@@ -28,7 +28,6 @@ class Cube {
         }
     }
 
-    private val cube = Mesh(BoxGeometry(1, 1, 1), MeshPhongMaterial().apply { color = Color(0x0000ff) })
     private val pod = Pod()
 
     private val scene = Scene().apply {
@@ -52,8 +51,8 @@ class Cube {
         stats.begin()
         val delta = clock.getDelta().toDouble()
 
-        cube.rotation.x -= delta
-        cube.rotation.y -= delta
+        pod.mesh.rotation.x -= delta
+        pod.mesh.rotation.y -= delta
 
         renderer.render(scene, camera)
 
