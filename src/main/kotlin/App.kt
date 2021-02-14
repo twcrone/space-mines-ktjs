@@ -4,6 +4,7 @@ import stats.js.Stats
 import three.js.*
 import kotlinx.browser.document
 import kotlinx.browser.window
+import pod.Pod
 
 class Cube {
     private val clock = Clock()
@@ -28,9 +29,11 @@ class Cube {
     }
 
     private val cube = Mesh(BoxGeometry(1, 1, 1), MeshPhongMaterial().apply { color = Color(0x0000ff) })
+    private val pod = Pod()
 
     private val scene = Scene().apply {
-        add(cube)
+        //add(cube)
+        add(pod.mesh)
 
         add(DirectionalLight(0xffffff, 1).apply { position.set(-1, 2, 4) })
         add(AmbientLight(0x404040, 1))
