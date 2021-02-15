@@ -1,7 +1,6 @@
 package controls
 
 import kotlinx.browser.window
-import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
@@ -49,10 +48,12 @@ class FlyControls(
     }
 
     private fun keyDown(event: Event) {
+        console.log("keyDown")
         keyEvent(event, false)
     }
 
     private fun keyUp(event: Event) {
+        console.log("keyUp")
         keyEvent(event, true)
     }
 
