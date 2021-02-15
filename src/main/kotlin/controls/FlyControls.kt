@@ -32,34 +32,49 @@ class FlyControls(
         )
         document.addEventListener(
             type = "keydown",
-            callback = { event ->
-                val keyboardEvent = event as KeyboardEvent
-                if (!keyboardEvent.altKey) {
-                    when (event.code) {
-                        "ShiftLeft", "ShiftRight" -> movementSpeedMultiplier = .1
-                        "KeyW" -> moveState.forward = 1
-                        "KeyS" -> moveState.back = 1
-                        "KeyA" -> moveState.left = 1
-                        "KeyD" -> moveState.right = 1
-
-                        "KeyR" -> moveState.up = 1
-                        "KeyF" -> moveState.down = 1
-
-                        "ArrowUp" -> moveState.pitchUp = 1
-                        "ArrowDown" -> moveState.pitchDown = 1
-
-                        "ArrowLeft" -> moveState.yawLeft = 1
-                        "ArrowRight" -> moveState.yawRight = 1
-
-                        "KeyQ" -> moveState.rollLeft = 1
-                        "KeyE" -> moveState.rollRight = 1
-                    }
-                }
-                console.log("Keyboard event " + keyboardEvent.code)
-                this.updateMovementVector()
-                this.updateRotationVector()
-            }
+            callback = this::keyDown
         )
+        document.addEventListener(
+            type = "keyup",
+            callback = this::keyUp
+        )
+        this.updateMovementVector()
+        this.updateRotationVector()
+    }
+
+    private fun keyDown(event: Event) {
+        keyEvent(event, false)
+    }
+
+    private fun keyUp(event: Event) {
+        keyEvent(event, true)
+    }
+
+    private fun keyEvent(event: Event, up: Boolean) {
+        val i = if(up) 1 else 0
+        val keyboardEvent = event as KeyboardEvent
+        if (!keyboardEvent.altKey) {
+            when (event.code) {
+                "ShiftLeft", "ShiftRight" -> movementSpeedMultiplier = .1
+                "KeyW" -> moveState.forward = i
+                "KeyS" -> moveState.back =  i
+                "KeyA" -> moveState.left =  i
+                "KeyD" -> moveState.right =  i
+
+                "KeyR" -> moveState.up =  i
+                "KeyF" -> moveState.down =  i
+
+                "ArrowUp" -> moveState.pitchUp =  i
+                "ArrowDown" -> moveState.pitchDown =  i
+
+                "ArrowLeft" -> moveState.yawLeft =  i
+                "ArrowRight" -> moveState.yawRight =  i
+
+                "KeyQ" -> moveState.rollLeft =  i
+                "KeyE" -> moveState.rollRight =  i
+            }
+        }
+        console.log("Keyboard event " + keyboardEvent.code)
         this.updateMovementVector()
         this.updateRotationVector()
     }
@@ -121,7 +136,6 @@ class FlyControls(
 
     companion object {
         private const val EPS = 0.000001
-
     }
 //        private fun keyDown(event: KeyboardEvent ) {
 //            if(event.altKey) {
