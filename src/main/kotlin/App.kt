@@ -58,17 +58,17 @@ class Cube {
     fun animate() {
         stats.begin()
         val delta = clock.getDelta().toDouble()
-        val f = flyControls.update()
-        f.invoke(delta)
+        flyControls.update(delta)
+
+        renderer.clear()
 
         pod.mesh.rotation.x -= delta
         pod.mesh.rotation.y -= delta
 
-        renderer.render(scene, camera)
-
         stats.end()
 
         window.requestAnimationFrame { animate() }
+        renderer.render(scene, camera)
     }
 }
 
