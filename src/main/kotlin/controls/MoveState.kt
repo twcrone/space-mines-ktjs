@@ -1,16 +1,16 @@
 package controls
 
 data class MoveState(
-    var up: Int = 0,
-    var down: Int = 0,
-    var left: Int = 0,
-    var right: Int = 0,
-    var forward: Int = 0,
-    var back: Int = 0,
-    var pitchUp: Int = 0,
-    var pitchDown: Int = 0,
-    var yawLeft: Int = 0,
-    var yawRight: Int = 0,
-    var rollLeft: Int = 0,
-    var rollRight: Int = 0,
+    var up: Boolean = false,
+    var down: Boolean = false,
+    var left: Boolean = false,
+    var right: Boolean = false,
+    var forward: Boolean = false,
+    var back: Boolean = false,
+    var pitchUp: Boolean = false,
+    var pitchDown: Boolean = false,
+    var yawLeft: Boolean = false,
+    var yawRight: Boolean = false,
+    var rollLeft: Boolean = false,
+    var rollRight: Boolean = false,
 )
