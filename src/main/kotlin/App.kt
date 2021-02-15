@@ -15,12 +15,18 @@ class Cube {
 //    }
 
     private val pod = Pod()
-    private val camera = PerspectiveCamera(45, window.aspectRatio, 0.1, 1000).apply {
+    private val camera = PerspectiveCamera(45, window.aspectRatio, 1.0, 1000).apply {
         position.set(50, 50, 125)
         lookAt(pod.mesh.position)
     }
 
-    private val flyControls = FlyControls(camera, movementSpeed = 25.0, rollSpeed = PI/24, dragToLook = true)
+    private val flyControls = FlyControls(
+        object3d = camera,
+        domElement = document,
+        movementSpeed = 20.0,
+        rollSpeed = PI/24,
+        dragToLook = true
+    )
 
     private val renderer = WebGLRenderer().apply {
         document.body?.appendChild(domElement)

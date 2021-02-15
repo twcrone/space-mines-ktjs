@@ -1,22 +1,23 @@
 package controls
 
-import kotlinx.browser.document
+import kotlinx.browser.window
+import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.UIEvent
-import three.js.Camera
 import three.js.EventDispatcher
+import three.js.Object3D
 import three.js.Quaternion
 import three.js.Vector3
 
 class FlyControls(
-    private val camera: Camera,
+    private val object3d: Object3D,
+    private val domElement: Node,
     val movementSpeed: Double = 1.0,
     val rollSpeed: Double = 0.005,
     val dragToLook: Boolean = false
 ) : EventDispatcher() {
 
-    private val scope = this
     var autoForward = false
     var tmpQuaternion = Quaternion()
     var mouseStatus = 0
@@ -26,20 +27,24 @@ class FlyControls(
     var rotationVector = Vector3(0, 0, 0)
 
     init {
-        document.addEventListener(
+        domElement.addEventListener(
             type = "contextmenu",
-            callback = { event -> event.preventDefault() }
+            callback = this::contextMenu
         )
-        document.addEventListener(
+        window.addEventListener(
             type = "keydown",
             callback = this::keyDown
         )
-        document.addEventListener(
+        window.addEventListener(
             type = "keyup",
             callback = this::keyUp
         )
         this.updateMovementVector()
         this.updateRotationVector()
+    }
+
+    private fun contextMenu(event: Event) {
+        event.preventDefault()
     }
 
     private fun keyDown(event: Event) {
@@ -51,28 +56,29 @@ class FlyControls(
     }
 
     private fun keyEvent(event: Event, up: Boolean) {
-        val i = if(up) 1 else 0
+        val i = if (up) 1 else 0
         val keyboardEvent = event as KeyboardEvent
-        if (!keyboardEvent.altKey) {
-            when (event.code) {
-                "ShiftLeft", "ShiftRight" -> movementSpeedMultiplier = .1
-                "KeyW" -> moveState.forward = i
-                "KeyS" -> moveState.back =  i
-                "KeyA" -> moveState.left =  i
-                "KeyD" -> moveState.right =  i
+        if (!up && event.altKey) {
+            return
+        }
+        when (event.code) {
+            "ShiftLeft", "ShiftRight" -> movementSpeedMultiplier = .1
+            "KeyW" -> moveState.forward = i
+            "KeyS" -> moveState.back = i
+            "KeyA" -> moveState.left = i
+            "KeyD" -> moveState.right = i
 
-                "KeyR" -> moveState.up =  i
-                "KeyF" -> moveState.down =  i
+            "KeyR" -> moveState.up = i
+            "KeyF" -> moveState.down = i
 
-                "ArrowUp" -> moveState.pitchUp =  i
-                "ArrowDown" -> moveState.pitchDown =  i
+            "ArrowUp" -> moveState.pitchUp = i
+            "ArrowDown" -> moveState.pitchDown = i
 
-                "ArrowLeft" -> moveState.yawLeft =  i
-                "ArrowRight" -> moveState.yawRight =  i
+            "ArrowLeft" -> moveState.yawLeft = i
+            "ArrowRight" -> moveState.yawRight = i
 
-                "KeyQ" -> moveState.rollLeft =  i
-                "KeyE" -> moveState.rollRight =  i
-            }
+            "KeyQ" -> moveState.rollLeft = i
+            "KeyE" -> moveState.rollRight = i
         }
         console.log("Keyboard event " + keyboardEvent.code)
         this.updateMovementVector()
@@ -98,78 +104,42 @@ class FlyControls(
     }
 
     fun dispose() {
-
+        domElement.removeEventListener("contextmenu", this::contextMenu)
+        window.removeEventListener("keyup", this::keyUp)
+        window.removeEventListener("keydown", this::keyDown)
     }
 
     private val lastQuaternion = Quaternion()
     private val lastPosition = Vector3()
 
     fun update(delta: Double) {
+        val moveMultiplier = delta * movementSpeed;
+        val rotationMultiplier = delta * rollSpeed;
 
-        val moveMult = delta * scope.movementSpeed;
-        val rotMult = delta * scope.rollSpeed;
-
-        camera.translateX(scope.moveVector.x.toDouble() * moveMult);
-        camera.translateY(scope.moveVector.y.toDouble() * moveMult);
-        camera.translateZ(scope.moveVector.z.toDouble() * moveMult);
+        object3d.translateX(moveVector.x.toDouble() * moveMultiplier);
+        object3d.translateY(moveVector.y.toDouble() * moveMultiplier);
+        object3d.translateZ(moveVector.z.toDouble() * moveMultiplier);
 
         tmpQuaternion.set(
-            scope.rotationVector.x.toDouble() * rotMult,
-            scope.rotationVector.y.toDouble() * rotMult,
-            scope.rotationVector.z.toDouble() * rotMult,
+            rotationVector.x.toDouble() * rotationMultiplier,
+            rotationVector.y.toDouble() * rotationMultiplier,
+            rotationVector.z.toDouble() * rotationMultiplier,
             1
         ).normalize()
-        camera.quaternion.multiply(scope.tmpQuaternion);
+        object3d.quaternion.multiply(tmpQuaternion);
 
-        val distance = lastPosition.distanceToSquared(camera.position)
+        val distance = lastPosition.distanceToSquared(object3d.position)
 
         if (distance.toDouble() > EPS ||
-            8 * (1.0 - lastQuaternion.dot(camera.quaternion).toDouble()) > EPS
+            8 * (1.0 - lastQuaternion.dot(object3d.quaternion).toDouble()) > EPS
         ) {
             dispatchEvent(UIEvent("change"))
-            lastQuaternion.copy(scope.camera.quaternion)
-            lastPosition.copy(scope.camera.position)
-
+            lastQuaternion.copy(object3d.quaternion)
+            lastPosition.copy(object3d.position)
         }
-
     }
 
     companion object {
         private const val EPS = 0.000001
     }
-//        private fun keyDown(event: KeyboardEvent ) {
-//            if(event.altKey) {
-//                return;
-//            }
-//
-//            when ( event ) {
-//
-//
-////                case 16: /* shift */ this.movementSpeedMultiplier = .1; break;
-////
-////                case 87: /*W*/ this.moveState.forward = 1; break;
-////                case 83: /*S*/ this.moveState.back = 1; break;
-////
-////                case 65: /*A*/ this.moveState.left = 1; break;
-////                case 68: /*D*/ this.moveState.right = 1; break;
-////
-////                case 82: /*R*/ this.moveState.up = 1; break;
-////                case 70: /*F*/ this.moveState.down = 1; break;
-////
-////                case 38: /*up*/ this.moveState.pitchUp = 1; break;
-////                case 40: /*down*/ this.moveState.pitchDown = 1; break;
-////
-////                case 37: /*left*/ this.moveState.yawLeft = 1; break;
-////                case 39: /*right*/ this.moveState.yawRight = 1; break;
-////
-////                case 81: /*Q*/ this.moveState.rollLeft = 1; break;
-////                case 69: /*E*/ this.moveState.rollRight = 1; break;
-//                else -> return
-//            }
-//
-//            this.updateMovementVector();
-//            this.updateRotationVector();
-//
-//        };
-//    }
 }
