@@ -22,7 +22,7 @@ class Cube {
 
     private val flyControls = FlyControls(
         object3d = camera,
-        domElement = document,
+        domElement = document.body ?: document,
         movementSpeed = 20.0,
         rollSpeed = PI/24,
         dragToLook = true

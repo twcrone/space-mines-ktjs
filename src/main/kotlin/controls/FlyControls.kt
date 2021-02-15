@@ -1,6 +1,7 @@
 package controls
 
 import kotlinx.browser.window
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
