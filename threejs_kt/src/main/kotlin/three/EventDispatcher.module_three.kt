@@ -41,5 +41,5 @@ open external class EventDispatcher {
     open fun addEventListener(type: String, listener: (event: Event) -> Unit)
     open fun hasEventListener(type: String, listener: (event: Event) -> Unit): Boolean
     open fun removeEventListener(type: String, listener: (event: Event) -> Unit)
-    open fun dispatchEvent(event: `T$7`)
+    open fun dispatchEvent(event: org.w3c.dom.events.Event)
 }

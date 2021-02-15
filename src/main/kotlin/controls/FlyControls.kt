@@ -4,20 +4,17 @@ import three.js.Camera
 import three.js.Quaternion
 import kotlinx.browser.document
 import org.w3c.dom.events.KeyboardEvent
-import org.w3c.dom.events.MouseEvent
-import three.js.Event
 import three.js.EventDispatcher
 import three.js.Vector3
 
-class FlyControls(val camera: Camera) {
+class FlyControls(
+    private val camera: Camera,
+    val movementSpeed: Double = 1.0,
+    val rollSpeed: Double = 0.005,
+    val dragToLook: Boolean = false
+    ): EventDispatcher() {
 
-    val domElement = document
-    val scope = this
-
-
-    var movementSpeed = 1.0
-    var rollSpeed = 0.005
-    var dragToLook = false
+    private val scope = this
     var autoForward = false
     var tmpQuaternion = Quaternion()
     var mouseStatus = 0
@@ -47,7 +44,7 @@ class FlyControls(val camera: Camera) {
                          "KeyF" ->  moveState.down = 1 
 
                          "ArrowUp" ->  moveState.pitchUp = 1 
-                         "ArrowDown" ->  moveState.pitchDown = 1 
+                         "ArrowDown" ->  moveState.pitchDown = 1
 
                          "ArrowLeft" ->  moveState.yawLeft = 1 
                          "ArrowRight" ->  moveState.yawRight = 1 
@@ -56,14 +53,11 @@ class FlyControls(val camera: Camera) {
                          "KeyE" ->  moveState.rollRight = 1 
                     }
                 }
-                this.updateMovementVector()
-                this.updateRotationVector()
+                console.log("Keyboard event " + keyboardEvent.code)
             }
         )
-    }
-
-    private fun contextmenu(event: Event) {
-
+        this.updateMovementVector()
+        this.updateRotationVector()
     }
 
     private fun updateMovementVector() {
@@ -88,7 +82,39 @@ class FlyControls(val camera: Camera) {
 
     }
 
-    fun update() {
+    fun update(): (Double) -> Unit {
+        val lastQuaternion = Quaternion()
+        val lastPosition = Vector3()
+
+        return { delta: Double ->
+
+            val moveMult = delta * scope.movementSpeed;
+            val rotMult = delta * scope.rollSpeed;
+
+            camera.translateX( scope.moveVector.x.toDouble() *  moveMult );
+            camera.translateY( scope.moveVector.y.toDouble() * moveMult );
+            camera.translateZ( scope.moveVector.z.toDouble() * moveMult );
+
+            tmpQuaternion.set(
+                scope.rotationVector.x.toDouble() * rotMult,
+                scope.rotationVector.y.toDouble() * rotMult,
+                scope.rotationVector.z.toDouble() * rotMult,
+                1 ).normalize()
+            camera.quaternion.multiply( scope.tmpQuaternion );
+
+            val distance = lastPosition.distanceToSquared(camera.position)
+
+            if (distance.toDouble() > EPS ||
+                8 * ( 1.0 - lastQuaternion.dot( camera.quaternion ).toDouble() ) > EPS
+            ) {
+
+                //scope.dispatchEvent(org.w3c.dom.events.Event("change"))
+                lastQuaternion.copy( scope.camera.quaternion )
+                lastPosition.copy( scope.camera.position )
+
+            }
+
+        };
 
     }
 

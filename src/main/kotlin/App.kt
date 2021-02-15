@@ -6,6 +6,7 @@ import three.js.*
 import kotlinx.browser.document
 import kotlinx.browser.window
 import pod.Pod
+import kotlin.math.PI
 
 class Cube {
     private val clock = Clock()
@@ -19,7 +20,7 @@ class Cube {
         lookAt(pod.mesh.position)
     }
 
-    private val flyControls = FlyControls(camera)
+    private val flyControls = FlyControls(camera, movementSpeed = 25.0, rollSpeed = PI/24, dragToLook = true)
 
     private val renderer = WebGLRenderer().apply {
         document.body?.appendChild(domElement)
@@ -57,6 +58,8 @@ class Cube {
     fun animate() {
         stats.begin()
         val delta = clock.getDelta().toDouble()
+        val f = flyControls.update()
+        f.invoke(delta)
 
         pod.mesh.rotation.x -= delta
         pod.mesh.rotation.y -= delta
